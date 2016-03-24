@@ -1,53 +1,41 @@
 // Dependencies
-var http = require('http');
+var https = require('https');
 var querystring = require('querystring');
-var q = require('q');
 
 module.exports = function (credentials, notification){
-
-  var def = q.defer();
 
   // Serialize notification into a query string. See docs @ https://nodejs.org/api/querystring.html#querystring_querystring_stringify_obj_sep_eq_options, Node.js v0.12.1
   var postData = querystring.stringify(notification);
 
-  // Object that defines http.request(). See docs @ https://nodejs.org/api/http.html#http_http_request_options_callback, Node.js v0.12.1
+  // Object that defines https.request(). See docs @ https://nodejs.org/api/https.html#https_https_request_options_callback, Node.js v0.12.1
   var options = {
-    hostname: 'push.ionic.io',
-    port: 80,
-    path: '/api/v1/push',
+    hostname: 'api.ionic.io',
+    port: 443,
+    path: '/push/notifications',
     method: 'POST',
     headers: {
-      "Authorization": "Basic " + new Buffer(credentials.IonicApplicationAPIsecret + ":").toString("base64"),
-      "Content-Type" : "application/json",
-      "X-Ionic-Application-Id" : credentials.IonicApplicationID
+      "Authorization": "Bearer " + credentials.IonicApplicationAPIToken,
+      "Content-Type" : "application/json"
     }
   };
 
-  // HTTP POST request. See docs @ https://nodejs.org/api/http.html#http_http_request_options_callback, Node.js v0.12.1
-  var req = http.request(options, function(res) {
+  // HTTPS POST request. See docs @ https://nodejs.org/api/https.html#https_https_request_options_callback, Node.js v0.12.1
+  var req = https.request(options, function(res) {
     console.log('STATUS: ' + res.statusCode);
     console.log('HEADERS: ' + JSON.stringify(res.headers));
     res.setEncoding('utf8');
-    var responseBody = '';
     res.on('data', function (chunk) {
       console.log('BODY: ' + chunk);
-      responseBody = responseBody + chunk;
-    });
-    res.on('end', function () {
-      def.resolve(JSON.parse(responseBody));
     });
   });
 
   // Error handling.
   req.on('error', function(e) {
     console.log('problem with request: ' + e.message);
-     def.resolve({"result":"error","message":e.message});  
   });
 
-  // Wite data to request body
+  // Write data to request body
   req.write(JSON.stringify(notification));
   req.end();
-
-  return def.promise;
 
 };
