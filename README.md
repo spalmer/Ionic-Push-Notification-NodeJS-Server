@@ -16,25 +16,58 @@ var ionicPushServer = require('ionic-push-server');
 
 var credentials = {
     IonicApplicationID : "myID",
-    IonicApplicationAPIsecret : "myAPIsecret"
+    IonicApplicationAPIToken : "myAPIsecret"
 };
 
 var notification = {
-  "tokens":["myDeviceToken"],
-  "notification":{
-    "alert":"Hi from Ionic Push Service!",
-    "ios":{
-      "badge":1,
-      "sound":"chime.aiff",
-      "expiry": 1423238641,
-      "priority": 10,
-      "contentAvailable": true,
-      "payload":{
-        "key1":"value",
-        "key2":"value"
+  "tokens": ["your", "device", "tokens"],
+  "user_ids": ["your", "user", "ids"],
+  "send_to_all": false,
+  "profile": "my-security-profile",
+  "scheduled": "2016-02-25T14:36:42+00:00",
+  "notification": {
+    "title": "Hi",
+    "message": "Hello world!",
+    "template_defaults": {
+      "name": "Tim",
+      "email": "ionitron@ionic.io"
+    },
+    "android": {
+      "title": "Hey",
+      "message": "Hello Android!",
+      "payload": {
+        "foo": true,
+        "bar": false
+      },
+      "sound": "sound.wav",
+      "image": "ionitron.png",
+      "stack": 4,
+      "collapse_key": false,
+      "delay_while_idle": true,
+      "time_to_live": 1000,
+      "template_defaults": {
+        "name": "Artyom",
+        "email": "ionitron@ionic.io"
+      }
+    },
+    "ios": {
+      "title": "Howdy",
+      "message": "Hello iOS!",
+      "payload": {
+        "foo": true,
+        "bar": false
+      },
+      "sound": "sound.wav",
+      "priority": 5,
+      "badge": 3,
+      "expiry": 1449256245,
+      "content_available": true,
+      "template_defaults": {
+        "name": "Alberto",
+        "email": "ionitron@ionic.io"
       }
     }
-  } 
+  }
 };
 
 ionicPushServer(credentials, notification).then(function(){},function(error){});
